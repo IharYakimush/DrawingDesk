@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -13,6 +15,8 @@ namespace WinFormsSample
         private readonly DrawingDesk.DrawingDesk drawingDesk;
         private Point? mouseDown = null;
         private Point? origin = null;
+        private bool pending = false;
+        private object SyncObj = new object();
 
         public DrawingDeskAdapter(PictureBox pictureBox, DrawingDesk.DrawingDesk drawingDesk)
         {
@@ -38,35 +42,58 @@ namespace WinFormsSample
             this.pictureBox.Resize += this.PictureBox_Resize;
         }
 
-        private void PictureBox_Resize(object sender, EventArgs e)
+        private async Task Update()
         {
-            this.drawingDesk.BitmapSize = pictureBox.Size;
+            if (this.pending)
+            {
+                return;
+            }
+
+            this.pending = true;
+            
+            await Task.Delay(20);
+
+            pending = false;
+            lock (this.SyncObj)
+            {
+                this.pictureBox.Image = this.drawingDesk.BuildBitmap();
+            }
         }
 
-        private void PictureBox_MouseWheel(object sender, MouseEventArgs e)
+        private void PictureBox_Resize(object sender, EventArgs e)
+        {
+            lock (this.SyncObj)
+            {
+                this.drawingDesk.BitmapSize = pictureBox.Size;
+            }
+        }
+
+        private async void PictureBox_MouseWheel(object sender, MouseEventArgs e)
         {
             if (e.Delta != 0)
             {
-                this.drawingDesk.Resolution = new PointF(this.drawingDesk.Resolution.X * (1 + e.Delta/1200f), this.drawingDesk.Resolution.Y * (1+e.Delta / 1200f));
+                lock (this.SyncObj)
+                {
+                    this.drawingDesk.Resolution = new PointF(this.drawingDesk.Resolution.X * (1 + e.Delta / 1200f), this.drawingDesk.Resolution.Y * (1 + e.Delta / 1200f));
+                }
 
-                // TODO: update image with delay, batch changes
-                this.pictureBox.Image = this.drawingDesk.BuildBitmap();
+                await this.Update();
             }
         }
 
-        private void PictureBox_MouseMove(object sender, MouseEventArgs e)
+        private async void PictureBox_MouseMove(object sender, MouseEventArgs e)
         {            
             if (this.mouseDown != null)
             {
-                this.drawingDesk.Origin = new Point(
+                lock (this.SyncObj)
+                {
+                    this.drawingDesk.Origin = new Point(
                     e.Location.X - this.mouseDown.Value.X + this.origin.Value.X,
                     e.Location.Y - this.mouseDown.Value.Y + this.origin.Value.Y);
+                }
 
-                // TODO: update image with delay, batch changes
-                this.pictureBox.Image = this.drawingDesk.BuildBitmap();
-            }
-
-            
+                await this.Update();
+            }            
         }
 
         private void PictureBox_MouseUp(object sender, MouseEventArgs e)
