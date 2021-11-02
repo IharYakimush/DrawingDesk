@@ -23,9 +23,11 @@ namespace WinFormsSample
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.drawingDesk.Draw(new Line(new PointF(-10, 0), new PointF(10, 0)));
-            this.drawingDesk.Draw(new Line(new PointF(0, -10), new PointF(0, 10)));
-            this.drawingDesk.Draw(new Line(new PointF(-1, -1), new PointF(2, 2)));
+            this.drawingDesk.Resolution = new PointF(100, 100);
+
+            this.drawingDesk.Draw(new Axis(new KeyValuePair<float, string>(MathF.PI, "π")));
+            this.drawingDesk.Draw(new FunctionGraph(x => MathF.Sin(x), Pens.Green));
+
             DrawingDeskAdapter adapter = new DrawingDeskAdapter(this.pictureBox1, this.drawingDesk);
             this.pictureBox1.Image = this.drawingDesk.BuildBitmap();
         }

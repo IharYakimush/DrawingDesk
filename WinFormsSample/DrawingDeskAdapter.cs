@@ -60,12 +60,14 @@ namespace WinFormsSample
             }
         }
 
-        private void PictureBox_Resize(object sender, EventArgs e)
+        private async void PictureBox_Resize(object sender, EventArgs e)
         {
             lock (this.SyncObj)
             {
                 this.drawingDesk.BitmapSize = pictureBox.Size;
             }
+
+            await this.Update();
         }
 
         private async void PictureBox_MouseWheel(object sender, MouseEventArgs e)
