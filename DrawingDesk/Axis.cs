@@ -20,14 +20,42 @@ namespace DrawingDesk
             this.font = font ?? SystemFonts.DefaultFont;
             this.brush = brush ?? Brushes.Black;
         }
-        public override void Draw(RectangleF sizeF, Graphics graphics, IPointTranslator translator)
-        {
-            graphics.DrawLine(this.pen, translator.Translate(new PointF(sizeF.Left, 0)), translator.Translate(new PointF(sizeF.Right, 0)));
-            graphics.DrawLine(this.pen, translator.Translate(new PointF(0, sizeF.Top)), translator.Translate(new PointF(0, sizeF.Bottom)));
+        public override void DrawInner(RectangleF sizeF, Graphics graphics, IPointTranslator translator)
+        {            
+            if (sizeF.Top >= 0 && sizeF.Bottom <= 0)
+            {
+                // x line
+                graphics.DrawLine(this.pen, translator.Translate(new PointF(sizeF.Left, 0)), translator.Translate(new PointF(sizeF.Right, 0)));
+                if (sizeF.Right >= 0)
+                {
+                    // arrow
+                    graphics.DrawLine(this.pen, translator.Translate(new PointF(sizeF.Right, 0)), translator.Translate(new PointF(sizeF.Right - 6 / translator.Resolution.X, 3 / translator.Resolution.Y)));
+                    graphics.DrawLine(this.pen, translator.Translate(new PointF(sizeF.Right, 0)), translator.Translate(new PointF(sizeF.Right - 6 / translator.Resolution.X, -3 / translator.Resolution.Y)));
+                }
+            }
+
+            if (sizeF.Right >= 0 && sizeF.Left <= 0)
+            {
+                //y line
+                graphics.DrawLine(this.pen, translator.Translate(new PointF(0, sizeF.Top)), translator.Translate(new PointF(0, sizeF.Bottom)));
+                if (sizeF.Top >= 0)
+                {
+                    ///arrow
+                    graphics.DrawLine(this.pen, translator.Translate(new PointF(0, sizeF.Top)), translator.Translate(new PointF(3 / translator.Resolution.X, sizeF.Top - 6 / translator.Resolution.Y)));
+                    graphics.DrawLine(this.pen, translator.Translate(new PointF(0, sizeF.Top)), translator.Translate(new PointF(-3 / translator.Resolution.X, sizeF.Top - 6 / translator.Resolution.Y)));
+                }
+            }
+            
 
             this.DrawXUnit(sizeF, graphics, translator);
             this.DrawYUnit(sizeF, graphics, translator);
-            graphics.DrawString("0", this.font, this.brush, translator.Translate(new PointF(0, 0)));
+
+            var zero = new PointF(0, 0);
+
+            if (sizeF.Top >= 0 && sizeF.Right >= 0 && sizeF.Left <= 0 && sizeF.Bottom <= 0)
+            {
+                graphics.DrawString("0", this.font, this.brush, translator.Translate(zero));
+            }
         }
 
         private void DrawXUnit(RectangleF sizeF, Graphics graphics, IPointTranslator translator)
@@ -40,7 +68,7 @@ namespace DrawingDesk
 
             while (x0 < sizeF.Right && x0 > sizeF.Left)
             {
-                if (y1 <= sizeF.Bottom && y1 >= sizeF.Top)
+                if (y1 <= sizeF.Top && y1 >= sizeF.Bottom)
                 {
                     Point pt1 = translator.Translate(new PointF(x0, y1));
                     Point pt2 = translator.Translate(new PointF(x0, y2));

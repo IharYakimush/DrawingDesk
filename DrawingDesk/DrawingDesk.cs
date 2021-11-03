@@ -27,9 +27,9 @@ namespace DrawingDesk
 
             RectangleF size = new RectangleF(
                 -this.Origin.X / this.Resolution.X,
-                (this.Origin.Y - this.BitmapSize.Height) / this.Resolution.Y,
-                this.BitmapSize.Width / this.Resolution.X,
-                this.BitmapSize.Height / this.Resolution.Y);
+                this.Origin.Y / this.Resolution.Y,
+                this.BitmapSize.Width  / this.Resolution.X,
+                -this.BitmapSize.Height / this.Resolution.Y);
 
             foreach (var item in this.figures)
             {

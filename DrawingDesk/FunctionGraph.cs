@@ -13,7 +13,7 @@ namespace DrawingDesk
             this.f = f ?? throw new ArgumentNullException(nameof(f));
             this.pen = pen ?? throw new ArgumentNullException(nameof(pen));
         }
-        public override void Draw(RectangleF sizeF, Graphics graphics, IPointTranslator translator)
+        public override void DrawInner(RectangleF sizeF, Graphics graphics, IPointTranslator translator)
         {
             float dx = 1 / translator.Resolution.X;
             float x1 = sizeF.X;
@@ -25,9 +25,17 @@ namespace DrawingDesk
                 try
                 {
                     float y1 = this.f(x1);
-                    float y2 = this.f(x2);
+                    y1 = MathF.Min(y1, sizeF.Top + 1/translator.Resolution.Y);
+                    y1 = MathF.Max(y1, sizeF.Bottom - 1/translator.Resolution.Y);
 
-                    graphics.DrawLine(this.pen, translator.Translate(new PointF(x1, y1)), translator.Translate(new PointF(x2, y2)));
+                    float y2 = this.f(x2);
+                    y2 = MathF.Min(y2, sizeF.Top + 1/translator.Resolution.Y);
+                    y2 = MathF.Max(y2, sizeF.Bottom - 1/translator.Resolution.Y);
+                    
+                    if (y2 < sizeF.Top && y2 > sizeF.Bottom)
+                    {
+                        graphics.DrawLine(this.pen, translator.Translate(new PointF(x1, y1)), translator.Translate(new PointF(x2, y2)));
+                    }
                 }
                 catch
                 {

@@ -5,7 +5,12 @@ VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrawingDesk", "DrawingDesk\DrawingDesk.csproj", "{0A97C21B-DE03-4389-81CB-7AC5346DDE86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsSample", "WinFormsSample\WinFormsSample.csproj", "{8527C46D-EA4C-4BB7-90B2-52205A1B95A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsSample", "WinFormsSample\WinFormsSample.csproj", "{8527C46D-EA4C-4BB7-90B2-52205A1B95A5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2FABB6F7-6149-483F-A543-CB176E32ED82}"
+	ProjectSection(SolutionItems) = preProject
+		backlog.txt = backlog.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
