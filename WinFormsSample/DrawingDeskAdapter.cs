@@ -141,6 +141,7 @@ namespace WinFormsSample
             float value = (float)(ResolutionFactor / this.resolutionControl.Value);
 
             this.drawingDesk.Resolution = new PointF(value, value);
+            this.InitCenterValues();
             await this.Update();
         }
 
@@ -164,22 +165,29 @@ namespace WinFormsSample
 
         private async void PictureBox_Resize(object sender, EventArgs e)
         {
+            bool update = pictureBox.Size.Width > 0 && pictureBox.Size.Height > 0;
             lock (this.SyncObj)
             {
-                this.drawingDesk.BitmapSize = pictureBox.Size;
+                if (update)
+                {
+                    this.drawingDesk.BitmapSize = pictureBox.Size;
+                }
             }
 
-            if (centerXControl != null)
+            if (centerXControl != null && update)
             {
                 this.CenterXControl_ValueChanged(null, null);
             }
 
-            if (centerYControl != null)
+            if (centerYControl != null && update)
             {
                 this.CenterYControl_ValueChanged(null, null);
             }
 
-            await this.Update();
+            if (update)
+            {
+                await this.Update();
+            }
         }
 
         private async void PictureBox_MouseWheel(object sender, MouseEventArgs e)

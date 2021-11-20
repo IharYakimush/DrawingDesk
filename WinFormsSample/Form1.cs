@@ -29,7 +29,7 @@ namespace WinFormsSample
             this.drawingDesk.Draw(new Axis(new KeyValuePair<float, string>(MathF.PI, "π")) {Padding = graphPadding });
             this.drawingDesk.Draw(new FunctionGraph(x => MathF.Sin(x), Pens.Green) { Padding = graphPadding });
             this.drawingDesk.Draw(new FunctionGraph(x => MathF.Pow(x, 3), Pens.Blue) { Padding = graphPadding });
-            this.drawingDesk.Draw(new FunctionGraph(x => 1/(x +0.001f), Pens.Red) { Padding = graphPadding });
+            this.drawingDesk.Draw(new FunctionGraph(x => 1/(x + 1f), Pens.Red) { Padding = graphPadding });
 
             this.adapter = new DrawingDeskAdapter(this.pictureBox1, this.drawingDesk);
             this.adapter.SetResolutionControl(this.numericUpDown1);
