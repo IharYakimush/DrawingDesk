@@ -6,6 +6,8 @@ namespace DrawingDesk
 {
     public class Axis : DrawingFigure
     {
+        private const int UnitPixels = 20;
+
         private readonly KeyValuePair<float, string> xunit;
         private readonly KeyValuePair<float, string> yunit;
         private readonly Pen pen;
@@ -84,7 +86,7 @@ namespace DrawingDesk
 
         private void DrawYUnit(RectangleF sizeF, Graphics graphics, IPointTranslator translator)
         {
-            float dyu = GetDu(20, translator.Resolution.Y, this.yunit);
+            float dyu = GetDu(UnitPixels, translator.Resolution.Y, this.yunit);
 
             float min = MathF.Min(sizeF.Top, sizeF.Bottom);
             float max = MathF.Max(sizeF.Top, sizeF.Bottom);

@@ -21,14 +21,19 @@ namespace DrawingDesk
             while (x1 < sizeF.Right)
             {
                 float x2 = x1 + dx;
+                while (x2 == x1)
+                {
+                    dx = dx + 1 / translator.Resolution.X;
+                    x2 = x1 + dx;
+                }
 
                 try
                 {
-                    float y1 = this.f(x1);
+                    float y1 = this.f((float)x1);
                     y1 = MathF.Min(y1, sizeF.Top + 1/translator.Resolution.Y);
                     y1 = MathF.Max(y1, sizeF.Bottom - 1/translator.Resolution.Y);
 
-                    float y2 = this.f(x2);
+                    float y2 = this.f((float)x2);
                     y2 = MathF.Min(y2, sizeF.Top + 1/translator.Resolution.Y);
                     y2 = MathF.Max(y2, sizeF.Bottom - 1/translator.Resolution.Y);
                     
