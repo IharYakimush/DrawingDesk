@@ -12,45 +12,27 @@ namespace DrawingDesk
         private readonly Pen pen;
         private readonly Font font;
         private readonly Brush brush;
+        private readonly Pen meshPen;
 
         public bool LineX { get; set; } = true;
 
         public bool LineY { get; set; } = true;
 
-        public Axis(KeyValuePair<float,string>? xunit = null, KeyValuePair<float, string>? yunit = null, Pen pen = null, Font font = null, Brush brush = null)
+        public bool MeshX { get; set; } = false;
+
+        public bool MeshY { get; set; } = false;
+
+        public Axis(KeyValuePair<float,string>? xunit = null, KeyValuePair<float, string>? yunit = null, Pen pen = null, Font font = null, Brush brush = null, Pen meshPen = null)
         {
             this.xunit = xunit ?? new KeyValuePair<float, string>(1, string.Empty);
             this.yunit = yunit ?? new KeyValuePair<float, string>(1, string.Empty);
             this.pen = pen ?? Pens.Black;
             this.font = font ?? SystemFonts.DefaultFont;
             this.brush = brush ?? Brushes.Black;
+            this.meshPen = meshPen ?? Pens.Gray;
         }
         public override void DrawInner(RectangleF sizeF, Graphics graphics, IPointTranslator translator)
-        {            
-            if (sizeF.Top >= 0 && sizeF.Bottom <= 0 && this.LineX)
-            {
-                // x line
-                graphics.DrawLine(this.pen, translator.Translate(new PointF(sizeF.Left, 0)), translator.Translate(new PointF(sizeF.Right, 0)));
-                if (sizeF.Right >= 0)
-                {
-                    // arrow
-                    graphics.DrawLine(this.pen, translator.Translate(new PointF(sizeF.Right, 0)), translator.Translate(new PointF(sizeF.Right - 6 / translator.Resolution.X, 3 / translator.Resolution.Y)));
-                    graphics.DrawLine(this.pen, translator.Translate(new PointF(sizeF.Right, 0)), translator.Translate(new PointF(sizeF.Right - 6 / translator.Resolution.X, -3 / translator.Resolution.Y)));
-                }
-            }
-
-            if (sizeF.Right >= 0 && sizeF.Left <= 0 && this.LineY)
-            {
-                //y line
-                graphics.DrawLine(this.pen, translator.Translate(new PointF(0, sizeF.Top)), translator.Translate(new PointF(0, sizeF.Bottom)));
-                if (sizeF.Top >= 0)
-                {
-                    ///arrow
-                    graphics.DrawLine(this.pen, translator.Translate(new PointF(0, sizeF.Top)), translator.Translate(new PointF(3 / translator.Resolution.X, sizeF.Top - 6 / translator.Resolution.Y)));
-                    graphics.DrawLine(this.pen, translator.Translate(new PointF(0, sizeF.Top)), translator.Translate(new PointF(-3 / translator.Resolution.X, sizeF.Top - 6 / translator.Resolution.Y)));
-                }
-            }
-
+        {
             if (this.LineX)
             {
                 this.DrawXUnit(sizeF, graphics, translator);
@@ -61,13 +43,37 @@ namespace DrawingDesk
                 this.DrawYUnit(sizeF, graphics, translator);
             }
 
+            if (sizeF.Top >= 0 && sizeF.Bottom <= 0 && this.LineX)
+            {
+                // x line
+                graphics.DrawLine(this.pen, translator.TranslateF(new PointF(sizeF.Left, 0)), translator.TranslateF(new PointF(sizeF.Right, 0)));
+                if (sizeF.Right >= 0)
+                {
+                    // arrow
+                    graphics.DrawLine(this.pen, translator.TranslateF(new PointF(sizeF.Right, 0)), translator.TranslateF(new PointF(sizeF.Right - 6 / translator.Resolution.X, 3 / translator.Resolution.Y)));
+                    graphics.DrawLine(this.pen, translator.TranslateF(new PointF(sizeF.Right, 0)), translator.TranslateF(new PointF(sizeF.Right - 6 / translator.Resolution.X, -3 / translator.Resolution.Y)));
+                }
+            }
+
+            if (sizeF.Right >= 0 && sizeF.Left <= 0 && this.LineY)
+            {
+                //y line
+                graphics.DrawLine(this.pen, translator.TranslateF(new PointF(0, sizeF.Top)), translator.TranslateF(new PointF(0, sizeF.Bottom)));
+                if (sizeF.Top >= 0)
+                {
+                    ///arrow
+                    graphics.DrawLine(this.pen, translator.TranslateF(new PointF(0, sizeF.Top)), translator.TranslateF(new PointF(3 / translator.Resolution.X, sizeF.Top - 6 / translator.Resolution.Y)));
+                    graphics.DrawLine(this.pen, translator.TranslateF(new PointF(0, sizeF.Top)), translator.TranslateF(new PointF(-3 / translator.Resolution.X, sizeF.Top - 6 / translator.Resolution.Y)));
+                }
+            }
+            
             if (this.LineX || this.LineY)
             {
                 var zero = new PointF(0, 0);
 
                 if (sizeF.Top >= 0 && sizeF.Right >= 0 && sizeF.Left <= 0 && sizeF.Bottom <= 0)
                 {
-                    graphics.DrawString("0", this.font, this.brush, translator.Translate(zero));
+                    graphics.DrawString("0", this.font, this.brush, translator.TranslateF(zero));
                 }
             }            
         }
@@ -77,19 +83,20 @@ namespace DrawingDesk
             float dxu = GetDu(UnitPixels, translator.Resolution.X, this.xunit);
 
             float x0 = MathF.Floor(sizeF.Left / dxu) * dxu + dxu;
-            float y1 = 2 / translator.Resolution.Y;
-            float y2 = -2 / translator.Resolution.Y;
+            float y1 = this.MeshX ? sizeF.Top : 2 / translator.Resolution.Y;
+            float yt = -2 / translator.Resolution.Y;
+            float y2 = this.MeshX ? sizeF.Bottom : yt;
 
             while (x0 < sizeF.Right && x0 > sizeF.Left)
             {
                 if (y1 <= sizeF.Top && y1 >= sizeF.Bottom)
                 {
-                    Point pt1 = translator.Translate(new PointF(x0, y1));
-                    Point pt2 = translator.Translate(new PointF(x0, y2));
+                    PointF pt1 = translator.TranslateF(new PointF(x0, y1));
+                    PointF pt2 = translator.TranslateF(new PointF(x0, y2));
 
-                    graphics.DrawLine(this.pen, pt1, pt2);
+                    graphics.DrawLine(this.meshPen, pt1, pt2);
 
-                    this.DrawUnitText(graphics, x0, pt2, this.xunit);
+                    this.DrawUnitText(graphics, x0, translator.TranslateF(new PointF(x0, yt)), this.xunit);
                 }
 
                 x0 = x0 + dxu;
@@ -104,26 +111,27 @@ namespace DrawingDesk
             float max = MathF.Max(sizeF.Top, sizeF.Bottom);
 
             float y0 = MathF.Floor(min / dyu) * dyu + dyu;
-            float x1 = 2 / translator.Resolution.X;
-            float x2 = -2 / translator.Resolution.X;
+            float xt = 2 / translator.Resolution.X;
+            float x1 = this.MeshY ? sizeF.Left : xt;
+            float x2 = this.MeshY ? sizeF.Right : -2 / translator.Resolution.X;
 
             while (y0 < max && y0 > min)
             {
                 if (x1 <= sizeF.Right && x1 >= sizeF.Left)
                 {
-                    Point pt1 = translator.Translate(new PointF(x1, y0));
-                    Point pt2 = translator.Translate(new PointF(x2, y0));
+                    PointF pt1 = translator.TranslateF(new PointF(x1, y0));
+                    PointF pt2 = translator.TranslateF(new PointF(x2, y0));
 
-                    graphics.DrawLine(this.pen, pt1, pt2);
+                    graphics.DrawLine(this.meshPen, pt1, pt2);
 
-                    this.DrawUnitText(graphics, y0, pt1, this.yunit);
+                    this.DrawUnitText(graphics, y0, translator.TranslateF(new PointF(xt, y0)), this.yunit);
                 }
 
                 y0 = y0 + dyu;
             }
         }
 
-        private void DrawUnitText(Graphics graphics, float value, Point pt, KeyValuePair<float, string> unit)
+        private void DrawUnitText(Graphics graphics, float value, PointF pt, KeyValuePair<float, string> unit)
         {
             const int e4 = 10000;
             float ve4 = MathF.Round((value * e4) / unit.Key);

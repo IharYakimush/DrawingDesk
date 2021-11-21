@@ -8,6 +8,7 @@ namespace DrawingDesk
     public interface IPointTranslator
     {
         Point Translate(PointF point);
+        PointF TranslateF(PointF point);
         PointF Resolution { get; }
     }
     public class DrawingDesk : IPointTranslator
@@ -63,6 +64,11 @@ namespace DrawingDesk
             int y = this.Origin.Y - (int)Math.Floor(point.Y * this.Resolution.Y);
 
             return new Point(x, y);
+        }
+
+        public PointF TranslateF(PointF point)
+        {
+            return new PointF(this.Origin.X + point.X * this.Resolution.X, this.Origin.Y - point.Y * this.Resolution.Y);
         }
     }
 }

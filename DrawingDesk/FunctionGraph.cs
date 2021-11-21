@@ -75,9 +75,13 @@ namespace DrawingDesk
                                 break;
                             }
                         }
+
                         if (dy < ylim)
-                        {
-                            graphics.DrawLine(this.pen, translator.Translate(new PointF(x1, Limit(y1.Value, sizeF))), translator.Translate(new PointF(x2, Limit(y2, sizeF))));
+                        {                            
+                            PointF pt1 = translator.TranslateF(new PointF(x1, Limit(y1.Value, sizeF)));
+                            PointF pt2 = translator.TranslateF(new PointF(x2, Limit(y2, sizeF)));                                                        
+                            //graphics.FillRectangle(this.pen.Brush, pt2.X-0.5f, pt2.Y-0.5f, 1, 1);
+                            graphics.DrawLine(this.pen, pt1, pt2);
                         }
                     }
 

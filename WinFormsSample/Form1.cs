@@ -33,6 +33,8 @@ namespace WinFormsSample
         private KeyValuePair<float, string>? axisy = null;
         private bool linex = true;
         private bool liney = true;
+        private bool meshx = false;
+        private bool meshy = false;
 
         private void Form1_Load(object sender, EventArgs e)
         {            
@@ -46,7 +48,14 @@ namespace WinFormsSample
         private void Draw()
         {
             this.drawingDesk.Clear();
-            this.drawingDesk.Draw(new Axis(this.axisx, this.axisy) { Padding = graphPadding, LineX = this.linex, LineY = this.liney });
+            this.drawingDesk.Draw(new Axis(this.axisx, this.axisy) 
+            { 
+                Padding = graphPadding, 
+                LineX = this.linex, 
+                LineY = this.liney, 
+                MeshX = this.meshx, 
+                MeshY = this.meshy 
+            });
 
             foreach (var item in this.graphs)
             {
@@ -91,8 +100,8 @@ namespace WinFormsSample
             switch (this.comboBox3.Text)
             {
                 case "None": { this.linex = false; break; }
-                case "Line": { this.linex = true; break; }
-                case "Mesh": { this.linex = true; break; }
+                case "Line": { this.linex = true; this.meshx = false; break; }
+                case "Mesh": { this.linex = true; this.meshx = true; break; }
                 default:
                     throw new NotSupportedException();
             }
@@ -105,8 +114,8 @@ namespace WinFormsSample
             switch (this.comboBox4.Text)
             {
                 case "None": { this.liney = false; break; }
-                case "Line": { this.liney = true; break; }
-                case "Mesh": { this.liney = true; break; }
+                case "Line": { this.liney = true; this.meshy = false; break; }
+                case "Mesh": { this.liney = true; this.meshy = true; break; }
                 default:
                     throw new NotSupportedException();
             }
