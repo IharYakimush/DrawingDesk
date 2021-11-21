@@ -6,8 +6,7 @@ namespace DrawingDesk
 {
     public class Axis : DrawingFigure
     {
-        private const int UnitPixels = 20;
-
+        private const int UnitPixels = 30;        
         private readonly KeyValuePair<float, string> xunit;
         private readonly KeyValuePair<float, string> yunit;
         private readonly Pen pen;
@@ -75,7 +74,7 @@ namespace DrawingDesk
 
         private void DrawXUnit(RectangleF sizeF, Graphics graphics, IPointTranslator translator)
         {
-            float dxu = GetDu(20, translator.Resolution.X, this.xunit);
+            float dxu = GetDu(UnitPixels, translator.Resolution.X, this.xunit);
 
             float x0 = MathF.Floor(sizeF.Left / dxu) * dxu + dxu;
             float y1 = 2 / translator.Resolution.Y;
@@ -126,7 +125,32 @@ namespace DrawingDesk
 
         private void DrawUnitText(Graphics graphics, float value, Point pt, KeyValuePair<float, string> unit)
         {
-            string ks = ((int)MathF.Round(value / unit.Key)).ToString("D");
+            const int e4 = 10000;
+            float ve4 = MathF.Round((value * e4) / unit.Key);
+
+            string ks;
+
+            if (ve4 / e4 == MathF.Round(ve4 / e4))
+            {
+                ks = ((int)(ve4 / e4)).ToString("D");
+            }
+            else if (ve4 / 1000 == MathF.Round(ve4 / 1000)) 
+            {
+                ks = (ve4 / e4).ToString("F1");
+            }
+            else if (ve4 / 100 == MathF.Round(ve4 / 100))
+            {
+                ks = (ve4 / e4).ToString("F2");
+            }
+            else if (ve4 / 10 == MathF.Round(ve4 / 10))
+            {
+                ks = (ve4 / e4).ToString("F3");
+            }
+            else
+            {
+                ks = (ve4 / e4).ToString("F4");
+            }
+
             if (ks != "0")
             {
                 string text = string.IsNullOrWhiteSpace(unit.Value)
@@ -143,16 +167,21 @@ namespace DrawingDesk
 
         private float GetDu(int pixelLimit,float resolution, KeyValuePair<float, string> unit)
         {
+            float[] factor = { 1f, 2.5f, 5f };
+
             float du = unit.Key;
 
-            for (int k = 0; k < 4; k++)
-            {
-                du = MathF.Pow(10, k) * unit.Key;
-
-                if (du * resolution > pixelLimit)
+            for (int k = -4; k < 4; k++)
+            {                
+                foreach (var f in factor)
                 {
-                    break;
-                }
+                    du = MathF.Pow(10, k) * unit.Key * f;
+
+                    if (du * resolution > pixelLimit + Math.Abs(k-1) * 3)
+                    {
+                        return du;
+                    }
+                }                
             }
 
             return du;

@@ -60,9 +60,10 @@ namespace WinFormsSample
         {
             switch (this.comboBox1.Text)
             {
-                case "None": { this.linex = false; break; }
-                case "1": { this.linex = true; this.axisx = null; break; }
-                case "π": { this.linex = true; this.axisx = new KeyValuePair<float, string>(MathF.PI, "π"); break; }
+                case "1": { this.axisx = null; break; }
+                case "√2": { this.axisx = new KeyValuePair<float, string>(MathF.Sqrt(2), "√2"); break; }
+                case "e": { this.axisx = new KeyValuePair<float, string>(MathF.E, "e"); break; }
+                case "π": { this.axisx = new KeyValuePair<float, string>(MathF.PI, "π"); break; }
                 default:
                     throw new NotSupportedException();
             }
@@ -74,9 +75,38 @@ namespace WinFormsSample
         {
             switch (this.comboBox2.Text)
             {
+                case "1": { this.axisy = null; break; }
+                case "√2": { this.axisy = new KeyValuePair<float, string>(MathF.Sqrt(2), "√2"); break; }
+                case "e": { this.axisy = new KeyValuePair<float, string>(MathF.E, "e"); break; }                
+                case "π": { this.axisy = new KeyValuePair<float, string>(MathF.PI, "π"); break; }
+                default:
+                    throw new NotSupportedException();
+            }
+
+            this.Draw();
+        }
+
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (this.comboBox3.Text)
+            {
+                case "None": { this.linex = false; break; }
+                case "Line": { this.linex = true; break; }
+                case "Mesh": { this.linex = true; break; }
+                default:
+                    throw new NotSupportedException();
+            }
+
+            this.Draw();
+        }
+
+        private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (this.comboBox4.Text)
+            {
                 case "None": { this.liney = false; break; }
-                case "1": { this.liney = true; this.axisy = null; break; }
-                case "π": { this.liney = true; this.axisy = new KeyValuePair<float, string>(MathF.PI, "π"); break; }
+                case "Line": { this.liney = true; break; }
+                case "Mesh": { this.liney = true; break; }
                 default:
                     throw new NotSupportedException();
             }
