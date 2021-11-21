@@ -52,6 +52,11 @@ namespace DrawingDesk
             this.figures.Add(figure);
         }
 
+        public void Clear()
+        {
+            this.figures.Clear();
+        }
+
         public Point Translate(PointF point)
         {
             int x = this.Origin.X + (int)Math.Floor(point.X * this.Resolution.X);

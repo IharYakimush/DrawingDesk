@@ -36,8 +36,8 @@ namespace WinFormsSample
             this.pictureBox = pictureBox;
             this.drawingDesk = drawingDesk;
 
-            this.drawingDesk.Resolution = new PointF(ResolutionFactor, ResolutionFactor);
             this.drawingDesk.BitmapSize = pictureBox.Size;
+            this.drawingDesk.Resolution = new PointF(this.drawingDesk.BitmapSize.Width / 10f, this.drawingDesk.BitmapSize.Width / 10f);
             this.drawingDesk.Origin = new Point(this.pictureBox.Width / 2, this.pictureBox.Height / 2);
 
             this.pictureBox.MouseDown += this.PictureBox_MouseDown;
@@ -50,7 +50,7 @@ namespace WinFormsSample
         public void SetResolutionControl(NumericUpDown value)
         {
             this.resolutionControl = value ?? throw new ArgumentNullException();
-            this.resolutionControl.Value = (decimal)(ResolutionFactor / this.drawingDesk.Resolution.X);
+            this.resolutionControl.Value = (decimal)(this.drawingDesk.BitmapSize.Width / this.drawingDesk.Resolution.X);
             this.resolutionControl.ValueChanged += this.ResolutionControl_ValueChanged;
         }
 
@@ -138,7 +138,7 @@ namespace WinFormsSample
 
         private async void ResolutionControl_ValueChanged(object sender, EventArgs e)
         {
-            float value = (float)(ResolutionFactor / this.resolutionControl.Value);
+            float value = (float)(this.drawingDesk.BitmapSize.Width / this.resolutionControl.Value);
 
             this.drawingDesk.Resolution = new PointF(value, value);
             this.InitCenterValues();
@@ -171,6 +171,10 @@ namespace WinFormsSample
                 if (update)
                 {
                     this.drawingDesk.BitmapSize = pictureBox.Size;
+                    if (this.resolutionControl != null)
+                    {
+                        this.ResolutionControl_ValueChanged(null, null);
+                    }
                 }
             }
 
@@ -200,7 +204,7 @@ namespace WinFormsSample
                     if (this.resolutionControl != null)
                     {
                         bool limit = false;
-                        decimal v = new decimal(ResolutionFactor / this.drawingDesk.Resolution.X);
+                        decimal v = new decimal(this.drawingDesk.BitmapSize.Width / this.drawingDesk.Resolution.X);
 
                         if (this.resolutionControl != null)
                         {
@@ -220,7 +224,7 @@ namespace WinFormsSample
 
                             if (limit)
                             {
-                                this.drawingDesk.Resolution = new PointF((float)(ResolutionFactor / v), (float)(ResolutionFactor / v));
+                                this.drawingDesk.Resolution = new PointF((float)(this.drawingDesk.BitmapSize.Width / v), (float)(this.drawingDesk.BitmapSize.Width / v));
                             }
                         }
                     }

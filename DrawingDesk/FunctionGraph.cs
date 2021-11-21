@@ -64,18 +64,11 @@ namespace DrawingDesk
                         {
                             adaptivedx = adaptivedx / 2;
 
-                            if (x1 != x1 + adaptivedx)
+                            if (x1 != x1 + adaptivedx && this.f(x1 + adaptivedx) != y2)
                             {
                                 x2 = x1 + adaptivedx;
-                                if (this.f((float)x2) != y2)
-                                {
-                                    y2 = this.f((float)x2);
-                                    dy = MathF.Abs(y2 - y1.Value);
-                                }
-                                else
-                                {
-                                    break;
-                                }
+                                y2 = this.f((float)x2);
+                                dy = MathF.Abs(y2 - y1.Value);
                             }
                             else
                             {

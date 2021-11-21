@@ -14,6 +14,10 @@ namespace DrawingDesk
         private readonly Font font;
         private readonly Brush brush;
 
+        public bool LineX { get; set; } = true;
+
+        public bool LineY { get; set; } = true;
+
         public Axis(KeyValuePair<float,string>? xunit = null, KeyValuePair<float, string>? yunit = null, Pen pen = null, Font font = null, Brush brush = null)
         {
             this.xunit = xunit ?? new KeyValuePair<float, string>(1, string.Empty);
@@ -24,7 +28,7 @@ namespace DrawingDesk
         }
         public override void DrawInner(RectangleF sizeF, Graphics graphics, IPointTranslator translator)
         {            
-            if (sizeF.Top >= 0 && sizeF.Bottom <= 0)
+            if (sizeF.Top >= 0 && sizeF.Bottom <= 0 && this.LineX)
             {
                 // x line
                 graphics.DrawLine(this.pen, translator.Translate(new PointF(sizeF.Left, 0)), translator.Translate(new PointF(sizeF.Right, 0)));
@@ -36,7 +40,7 @@ namespace DrawingDesk
                 }
             }
 
-            if (sizeF.Right >= 0 && sizeF.Left <= 0)
+            if (sizeF.Right >= 0 && sizeF.Left <= 0 && this.LineY)
             {
                 //y line
                 graphics.DrawLine(this.pen, translator.Translate(new PointF(0, sizeF.Top)), translator.Translate(new PointF(0, sizeF.Bottom)));
@@ -47,17 +51,26 @@ namespace DrawingDesk
                     graphics.DrawLine(this.pen, translator.Translate(new PointF(0, sizeF.Top)), translator.Translate(new PointF(-3 / translator.Resolution.X, sizeF.Top - 6 / translator.Resolution.Y)));
                 }
             }
-            
 
-            this.DrawXUnit(sizeF, graphics, translator);
-            this.DrawYUnit(sizeF, graphics, translator);
-
-            var zero = new PointF(0, 0);
-
-            if (sizeF.Top >= 0 && sizeF.Right >= 0 && sizeF.Left <= 0 && sizeF.Bottom <= 0)
+            if (this.LineX)
             {
-                graphics.DrawString("0", this.font, this.brush, translator.Translate(zero));
+                this.DrawXUnit(sizeF, graphics, translator);
             }
+
+            if (this.LineY)
+            {
+                this.DrawYUnit(sizeF, graphics, translator);
+            }
+
+            if (this.LineX || this.LineY)
+            {
+                var zero = new PointF(0, 0);
+
+                if (sizeF.Top >= 0 && sizeF.Right >= 0 && sizeF.Left <= 0 && sizeF.Bottom <= 0)
+                {
+                    graphics.DrawString("0", this.font, this.brush, translator.Translate(zero));
+                }
+            }            
         }
 
         private void DrawXUnit(RectangleF sizeF, Graphics graphics, IPointTranslator translator)
